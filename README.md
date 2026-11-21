@@ -19,7 +19,10 @@ Tinkercad provides a simulation environment where this circuit can be virtually 
 
 
 ## Circuit Diagram:
- 
+
+ <img width="1385" height="765" alt="image" src="https://github.com/user-attachments/assets/34575771-7f92-42cc-af77-c92f7654a65b" />
+
+
 ## Procedure: //Modify the procedure based on your circuit
 
 Step 1: Set Up the Tinkercad Environment
@@ -53,14 +56,83 @@ Step 7: Save Your Work
 
 
 ## Code:
+```
+// HC-SR04 long-range buzzer example
+// Assumes a PASSIVE buzzer (uses tone()). If your buzzer is ACTIVE, replace tone/noTone
+// with digitalWrite(BUZZER, HIGH/LOW).
 
+#define TRIG 9
+#define ECHO 10
+#define BUZZER 6   // buzzer pin (to GND)
+#define LED 7      // indicator LED
+
+// User settings
+const float SPEED_CM_PER_US = 0.0343;   // speed of sound (cm per microsecond) ~343 m/s
+const int  ALERT_DISTANCE_CM = 309;     // distance threshold in cm (set to 309)
+const unsigned long PULSE_TIMEOUT_US = 35000UL; // 35 ms timeout (~up to 500 cm round-trip)
+
+void setup() {
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+  pinMode(BUZZER, OUTPUT);
+  pinMode(LED, OUTPUT);
+  digitalWrite(TRIG, LOW);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Send ultrasonic pulse (10 microsecond)
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+
+  // Wait for echo (with timeout)
+  unsigned long duration = pulseIn(ECHO, HIGH, PULSE_TIMEOUT_US);
+
+  // If no echo received within timeout, pulseIn returns 0
+  float distance_cm = 0.0;
+  if (duration == 0) {
+    // No object detected within range (or no echo)
+    distance_cm = -1.0; // mark as out of range
+  } else {
+    // distance = (duration_us * speed_of_sound_cm_per_us) / 2
+    distance_cm = (duration * SPEED_CM_PER_US) / 2.0;
+  }
+
+  // Debug print
+  Serial.print("Duration(us): ");
+  Serial.print(duration);
+  Serial.print("  Distance(cm): ");
+  if (distance_cm < 0) Serial.println("Out of range");
+  else {
+    Serial.print(distance_cm, 1);
+    Serial.println(" cm");
+  }
+
+  // Decide buzzer and LED
+  if (distance_cm > 0 && distance_cm <= ALERT_DISTANCE_CM) {
+    digitalWrite(LED, HIGH);
+    // Beep pattern that increases with closeness:
+    // frequency increases as object gets closer (optional)
+    int freq = map((int)distance_cm, 1, ALERT_DISTANCE_CM, 2000, 600); // 2kHz when very close, 600Hz at threshold
+    if (freq < 200) freq = 200;
+    tone(BUZZER, freq); // start tone (continuous)
+  } else {
+    digitalWrite(LED, LOW);
+    noTone(BUZZER);
+  }
+
+  delay(120); // stability
+}
+```
 
 ## Output:
  
+<img width="849" height="578" alt="image" src="https://github.com/user-attachments/assets/7d8adb59-0f90-4010-b0f4-798c13fb11e0" />
 
 
 ## Result
 
-
-Result:
 The simulation successfully measured the distance between the ultrasonic sensor  HC-SR04 and the object. The real-time distance values were accurately displayed on the serial monitor in centimeters.
