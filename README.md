@@ -20,7 +20,8 @@ Tinkercad provides a simulation environment where this circuit can be virtually 
 
 ## Circuit Diagram:
 
- <img width="1385" height="765" alt="image" src="https://github.com/user-attachments/assets/34575771-7f92-42cc-af77-c92f7654a65b" />
+<img width="1026" height="890" alt="image" src="https://github.com/user-attachments/assets/32c5b8ac-ce4f-4e8b-a511-161e74e2c2e1" />
+
 
 
 ## Procedure: //Modify the procedure based on your circuit
